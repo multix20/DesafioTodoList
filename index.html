@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Todo List</h1>
+    <div class="input-container">
+      <input type="text" id="nueva-tarea" placeholder="Nueva tarea">
+      <button onclick="agregarTarea()" class="btn-agregar">Agregar</button>
+    </div>
+    <div class="status-container">
+      <p>Total: <span id="total-tareas">0</span></p>
+      <p>Realizadas: <span id="tareas-completadas">0</span></p>
+    </div>
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tarea</th>
+          <th>Completada</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="lista-tareas">
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let tareas = [
+      { id: 16, descripcion: "Hacer mercado", completado: true },
+      { id: 60, descripcion: "Estudiar para la prueba", completado: false },
+      { id: 24, descripcion: "Sacar a pasear a Tobby", completado: false }
+    ];
+
+    function actualizarLista() {
+      const lista = document.getElementById('lista-tareas');
+      lista.innerHTML = '';
+      tareas.forEach(tarea => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${tarea.id}</td>
+          <td>${tarea.descripcion}</td>
+          <td><input type="checkbox" ${tarea.completado ? 'checked' : ''} onclick="marcarCompletado(${tarea.id})"></td>
+          <td><button onclick="borrarTarea(${tarea.id})" class="btn-borrar">✖</button></td>
+        `;
+        lista.appendChild(row);
+      });
+      actualizarContadores();
+    }
+
+    function agregarTarea() {
+      const descripcion = document.getElementById('nueva-tarea').value;
+      if (descripcion) {
+        const nuevaTarea = {
+          id: Date.now(),
+          descripcion: descripcion,
+          completado: false
+        };
+        tareas.push(nuevaTarea);
+        document.getElementById('nueva-tarea').value = '';
+        actualizarLista();
+      }
+    }
+
+    function borrarTarea(id) {
+      tareas = tareas.filter(tarea => tarea.id !== id);
+      actualizarLista();
+    }
+
+    function marcarCompletado(id) {
+      const tarea = tareas.find(tarea => tarea.id === id);
+      if (tarea) {
+        tarea.completado = !tarea.completado;
+        actualizarLista();
+      }
+    }
+
+    function actualizarContadores() {
+      const totalTareas = tareas.length;
+      const tareasCompletadas = tareas.filter(tarea => tarea.completado).length;
+      document.getElementById('total-tareas').textContent = totalTareas;
+      document.getElementById('tareas-completadas').textContent = tareasCompletadas;
+    }
+
+    // Inicializar la lista con tareas predeterminadas
+    document.addEventListener('DOMContentLoaded', actualizarLista);
+  </script>
+</body>
+</html>
